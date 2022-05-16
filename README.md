@@ -3,6 +3,8 @@
 # # ChessTez
 # ** A smart contract based chess game built on the Tezos blockchain that rewards winners with NFTs **
 
+To learn how to play chess and how it works visit https://en.wikipedia.org/wiki/Chess
+
  ChessTez is about players(users) playing the game chess (although LUDO game is planned to be included when the build is complete) with other players(users).
 When the 2 players gets to play and the winner of the round is declared, the stats are recorded and the commulative is used to determine what rank of the NFT will be given to be minted. 
 

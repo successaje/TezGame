@@ -2,8 +2,6 @@ from collections import namedtuple, deque
 import random
 from painter import PaintBoard
 
-# Thanks to Angel Angelov
-# This is piece or a token in ludo game
 # Simple class has only index, colour and id attributes
 Pawn = namedtuple("Pawn", "index colour id")
 

@@ -12,6 +12,7 @@ t_status = sp.TVariant(
     claim_stalemate = sp.TUnit,
 )
 
+
 class Chess(sp.Contract):
     def __init__(self, player1, player2):
         self.init(

@@ -1,3 +1,5 @@
+# # TezGame
+
 # # ChessTez
 # ** A smart contract based chess game built on the Tezos blockchain that rewards winners with NFTs **
 
@@ -31,9 +33,13 @@ A feature called "winner declaration mode" will be included, such that the playe
  
  
  
+ More information coming soon................................................
  
+ # # LudoTez
  
- More information coming soon.........................
+ # **A smart contract based Ludo game built on the Tezos blockchain that rewards winners with NFTs**
+ 
+ To learn how to play ludo and how it works visit https://en.wikipedia.org/wiki/Ludo_(board_game)
  
  
  

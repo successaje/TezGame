@@ -54,7 +54,7 @@ def redraw_gameWindow(win, bo, p1, p2, colour, ready):
 
     formatTime1 = str(int(p1//60)) + ":" + str(int(p1%60))
     formatTime2 = str(int(p2 // 60)) + ":" + str(int(p2 % 60))
-    with sp.if int(p1%60) < 10:
+    with sp.if_(int(p1%60) < 10):
         formatTime1 = formatTime1[:-1] + "0" + formatTime1[-1]
     with sp.if int(p2%60) < 10:
         formatTime2 = formatTime2[:-1] + "0" + formatTime2[-1]
@@ -136,21 +136,21 @@ def click(pos):
             divY = y - rect[1]
             i = int(divX / (rect[2]/8))
             j = int(divY / (rect[3]/8))
-            return i, j
+            sp.result(i, j)
 
-    return -1, -1
+    sp.result(-1, -1)
 
 @sp.offchain_view()
 def connect():
     global n
     n = Network()
-    return n.board
+    sp.result(n.board)
 
-
+@sp.entry_point
 def main():
     global turn, bo, name
 
-    colour = bo.start_user
+    colour = bo.data.start_user
     count = 0
 
     bo = n.send("update_moves")

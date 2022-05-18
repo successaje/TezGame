@@ -20,8 +20,8 @@ black_rook = pygame.image.load(os.path.join("images", "black_pawn.png"))
 black_pawn = pygame.image.load(os.path.join("images", "black_pawn.png"))
 
 
-whites = sp.list([white_king, white_queen, white_bishop, white_knight, white_rook, white_pawn], t = sp.TString)
-blacks = sp.list([black_king, black_queen, black_bishop, black_knight, black_rook, black_pawn], t = sp.TString)
+whites = sp.list([white_king, white_queen, white_bishop, white_knight, white_rook, white_pawn])
+blacks = sp.list([black_king, black_queen, black_bishop, black_knight, black_rook, black_pawn])
 
 WHITE = sp.list([], t = sp.TString)
 BLACK = sp.list([], t = sp.Tstring)

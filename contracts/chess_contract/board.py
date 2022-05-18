@@ -24,17 +24,19 @@ class Board(sp.Contract):
             ready = False,
             last = None,
             copy = True,
-            board = [[0 for x in range(8)] for _ in range(rows)],
+            board = sp.list([[0 for x in range(8)] for _ in range(rows)]),
 
             turn = "white",
-
+            
+        )
+        self.init_storage(
             time1 = 900,
             time2 = 900,
 
             storedTime1 = 0,
             storedTime2 = 0,
         )
-            
+        
         self.board[0][1] = Knight(0, 1, "b")
         self.board[0][2] = Bishop(0, 2, "b")
         self.board[0][3] = Queen(0, 3, "b")

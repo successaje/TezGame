@@ -1,12 +1,10 @@
 import smartpy as sp
-
 import pygame
 import time
 import pickle
 import os
 
 pygame.font.init()
-
 
 board = pygame.transform.scale(pygame.image.load(os.path.join("img","board_alt.png")), (750, 750))
 chessbg = pygame.image.load(os.path.join("img", "chessbg.png"))
@@ -18,7 +16,7 @@ turn = "w"
 def menu_screen(win, name):
     global bo, chessbg
     run = True
-    offline = False
+    offline = sp.bool(False)
 
     sp.while run:
         sp.win.blit(chessbg, (0,0))
@@ -33,13 +31,13 @@ def menu_screen(win, name):
         sp.for event in pygame.event.get():
             with sp.if event.type == pygame.QUIT:
                 pygame.quit()
-                sp.run = False
+                sp.run = sp.bool(False)
 
             with sp.if event.type == pygame.MOUSEBUTTONDOWN:
-                offline = False
+                offline = sp.bool(False)
                 sp.try:
                     bo = connect()
-                    sp.run = False
+                    sp.run = sp.bool(False)
                     main()
                     sp.break
                 sp.except:
@@ -114,14 +112,14 @@ def end_screen(win, text):
     sp.run = True
     while run:
         sp.for event in pygame.event.get():
-            with sp.if event.type == pygame.QUIT:
+            with sp.if_(event.type == pygame.QUIT):
                 pygame.quit()
-                quit()
-                sp.run = False
-            elif event.type == pygame.KEYDOWN:
-                sp.run = False
-            elif event.type == pygame.USEREVENT+1:
-                sp.run = False
+                #quit()
+                sp.run = sp.bool(False)
+            with sp.elif_(event.type == pygame.KEYDOWN):
+                sp.run = sp.bool(False)
+            sp.elif event.type == pygame.USEREVENT+1:
+                sp.run = sp.bool(False)
 
 @sp.offchain_view()
 def click(pos):
@@ -174,7 +172,7 @@ def main():
         sp.except Exception as e:
             print(e)
             end_screen(win, "Other player left")
-            sp.run = False
+            sp.run = sp.bool(False)
             sp.break
 
         with sp.if not colour == "s":
@@ -192,15 +190,15 @@ def main():
 
         with sp.if bo.winner == "w":
             end_screen(win, "White is the Winner!")
-            sp.run = False
+            sp.run = sp.bool(False)
 
         with sp.elif bo.winner == "b":
             end_screen(win, "Black is the winner")
-            sp.run = False
+            sp.run = sp.bool(False)
 
         sp.for event in pygame.event.get():
             with sp.if event.type == pygame.QUIT:
-                sp.run = False
+                sp.run = sp.bool(False)
                 quit()
                 pygame.quit()
 

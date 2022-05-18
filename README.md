@@ -1,5 +1,9 @@
 # # TezGame
 
+#########################################
+# Author: Aje Success
+# No of contributors: 1
+
 # # ChessTez
 # ** A smart contract based chess game built on the Tezos blockchain that rewards winners with NFTs **
 

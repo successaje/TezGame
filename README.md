@@ -33,9 +33,11 @@ A feature called "winner declaration mode" will be included, such that the playe
  # Tournaments and Championships
  Championship games will be held to determine the best of the best in the game of chess and reward with a rare lengendary NFT as reward.
  
- # # About the NFT collections
  
  ..................................coming soon
+ 
+ # # About the NFT collections
+ 
  
  More information coming soon................................................
  
@@ -44,6 +46,7 @@ A feature called "winner declaration mode" will be included, such that the playe
  # **A smart contract based Ludo game built on the Tezos blockchain that rewards winners with NFTs**
  
  To learn how to play ludo and how it works visit https://en.wikipedia.org/wiki/Ludo_(board_game)
+ Ludo game is a game that 2, 3 or 4 people can play. Although its ideal for only 2 and 4 people to play because of fairness arounf the corner.
  
  
  

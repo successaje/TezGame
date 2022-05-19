@@ -14,7 +14,7 @@ class Player(sp.Contract):
             choose_pawn_delegate = choose_pawn_delegate,
             name = name
         )
-        with sp.if self.data.name is None and self.data.choose_pawn_delegate is None:
+        sp.if self.data.name is None and self.data.choose_pawn_delegate is None:
             self.data.name = "Computer"
         self.data.finished = False
 
@@ -22,18 +22,18 @@ class Player(sp.Contract):
                             sp.for i in range(1, 5)]
     @sp.offchain_view
     def __str__(self):
-        return "{}({})".format(self.data.name, self.data.colour)
+        sp.result("{}({})".format(self.data.name, self.data.colour))
 
     @sp.entry_point
     def choose_pawn(self, pawns):
-        with sp.if len(pawns) == 1:
+        sp.if len(pawns) == 1:
             sp.index = 0
-        with sp.elif len(pawns) > 1:
-            with sp.if self.data.choose_pawn_delegate is None:
+        sp.elif len(pawns) > 1:
+            sp.if self.data.choose_pawn_delegate is None:
                 sp.index = random.randint(0, len(pawns) -1)
-            with sp.else:
+            sp.else:
                 sp.index = self.data.choose_pawn_delegate()
-        return sp.index
+        sp.result(sp.index)
 
 class Board(sp.Contract):
     sp.BOARD_SIZE = 56
@@ -46,11 +46,11 @@ class Board(sp.Contract):
     def __init__(self):
         sp.Board.COLOUR_START = {
             colour: 1 + index * sp.BoardCOLOUT_DISTANCE
-             with sp.for index, colour in enumerate(sp.Board.COLOUR_ORDER)
+             sp.for index, colour in enumerate(sp.Board.COLOUR_ORDER)
         }
         sp.Board.COLOUR_END = {
             colour : index * sp.Board.COLOUR_DISTANCE
-            with sp.for index, colour in enumerate(sp.Board.COLOUR_ORDER)}
+            sp.for index, colour in enumerate(sp.Board.COLOUR_ORDER)}
         sp.Board.COLOUR_END['yellow'] = sp.Board.BOARD_SIZE
 
 
@@ -69,7 +69,7 @@ class Board(sp.Contract):
 
     @sp.entry_point
     def is_pawn_on_board_pool(self, pawn):
-        return self.data.pawns_possiotion[pawn] == self.data.board_pool_position
+        sp.result(self.data.pawns_possiotion[pawn] == self.data.board_pool_position)
 
     @sp.entry_point
     def put_pawn_on_starting_square(self, pawn):
@@ -81,7 +81,7 @@ class Board(sp.Contract):
     def can_pawn_move(self, pawn, rolled_value):
         '''check if pawn can outside board colour size'''
         sp.common_poss,sp. private_poss = self.data.pawns_possiotion[pawn]
-        with sp.if private_poss + rolled_value > self.BOARD_COLOUR_SIZE:
+        sp.if private_poss + rolled_value > self.BOARD_COLOUR_SIZE:
             sp.result(False) 
         sp.result(True)
 
@@ -92,17 +92,17 @@ class Board(sp.Contract):
         '''
         sp.common_poss, sp.private_poss = self.data.pawns_possiotion[pawn]
         sp.end = self.data.COLOUR_END[pawn.colour.lower()]
-        with sp.if (sp.private_poss > 0):
+        sp.if (sp.private_poss > 0):
             # pawn is already reached own final squares
             sp.private_poss += rolled_value
-        with sp.elif (sp.common_poss <= end and sp.common_poss + sp.rolled_value > end):
+        sp.elif (sp.common_poss <= end and sp.common_poss + sp.rolled_value > end):
             # pawn is entering in own squares
             private_poss += rolled_value - (end - common_poss)
             common_poss = end
-        with sp.else:
+        sp.else:
             # pawn will be still in common square
             common_poss += rolled_value
-            with sp.if common_poss > self.data.BOARD_SIZE:
+            sp.if common_poss > self.data.BOARD_SIZE:
                 sp.common_poss = sp.common_poss - self.data.BOARD_SIZE
         sp.position = sp.common_poss, sp.private_poss
         self.set_pawn(pawn, position)
@@ -132,7 +132,7 @@ class Board(sp.Contract):
         sp.positions = {}
         sp.for sp.pawn, sp.position in self.data.pawns_possiotion.items():
             sp.common, sp.private = sp.position
-            with sp.if not sp.private == Board.data.BOARD_COLOUR_SIZE:
+            sp.if not sp.private == Board.data.BOARD_COLOUR_SIZE:
                 positions.setdefault(sp.position, []).append(pawn)
         sp.result(self.data.painter.paint(positions))
 
@@ -186,7 +186,7 @@ class Game(sp.Contract):
     @spawn_main
     def get_available_colours(self):
         '''if has available colour on boards'''
-        sp.used = [player.colour with sp.for player in self.data.players]
+        sp.used = [player.colour sp.for player in self.data.players]
         available = set(self.data.board.COLOUR_ORDER) - set(used)
         sp.result(sorted(available))
 
@@ -196,7 +196,7 @@ class Game(sp.Contract):
         It is underscore because if called 
         outside the class will break order
         '''
-        with sp.if not self.data.rolled_value == Die.MAX:
+        sp.if not self.data.rolled_value == Die.MAX:
             self.data.players.rotate(-1)
         sp.result(self.data.players[0])
 
@@ -204,7 +204,7 @@ class Game(sp.Contract):
     def get_pawn_from_board_pool(self, player):
         '''when pawn must start'''
         sp.for pawn in player.pawns:
-            with sp.if self.data.board.is_pawn_on_board_pool(pawn):
+            sp.if self.data.board.is_pawn_on_board_pool(pawn):
                 sp.result(pawn)
 
     @sp.entry_point
@@ -213,12 +213,12 @@ class Game(sp.Contract):
         from die allowed to move the pawn
         '''
         sp.allowed_pawns = []
-        with sp.if rolled_value == Die.MAX:
+        sp.if rolled_value == Die.MAX:
             pawn = self.data.get_pawn_from_board_pool(player)
             sp.if pawn:
                 sp.allowed_pawns.append(pawn)
         sp.for pawn in player.pawns:
-            with sp.if not self.data.board.is_pawn_on_board_pool(pawn) and\
+            sp.if not self.data.board.is_pawn_on_board_pool(pawn) and\
                     self.data.board.can_pawn_move(pawn, rolled_value):
                 sp.allowed_pawns.append(pawn)
         sp.result(sorted(sp.allowed_pawns, key=lambda pawn: pawn.index))
@@ -231,7 +231,7 @@ class Game(sp.Contract):
     def _jog_foreign_pawn(self, pawn):
         sp.pawns = self.data.board.get_pawns_on_same_postion(pawn)
         sp.for p in sp.pawns:
-            with sp.if p.colour != pawn.colour:
+            sp.if p.colour != pawn.colour:
                 self.data.board.put_pawn_on_board_pool(p)
                 self.data.jog_pawns.append(p)
 
@@ -241,22 +241,22 @@ class Game(sp.Contract):
         After move ask board if pawn reach end or
         jog others pawn. Check if pawn and player finished.
         '''
-        with sp.if self.data.rolled_value == Die.MAX and\
+        sp.if self.data.rolled_value == Die.MAX and\
                 self.data.board.is_pawn_on_board_pool(pawn):
             self.data.board.put_pawn_on_starting_square(pawn)
             self.data._jog_foreign_pawn(pawn)
             sp.result(
         self.data.board.move_pawn(pawn, self.rolled_value)
             )
-        with sp.if self.data.board.does_pawn_reach_end(pawn):
+        sp.if self.data.board.does_pawn_reach_end(pawn):
             player.pawns.remove(pawn)
-            with sp.if not player.pawns:
+            sp.if not player.pawns:
                 self.data.standing.append(player)
                 self.data.players.remove(player)
-                with sp.if len(self.data.players) == 1:
+                sp.if len(self.data.players) == 1:
                     self.data.standing.extend(self.data.players)
                     self.data.finished = True
-        with sp.else:
+        sp.else:
             self.data._jog_foreign_pawn(pawn)
 
 
@@ -271,21 +271,21 @@ class Game(sp.Contract):
         '''
         self.data.jog_pawns = []
         self.data.curr_player = self.data._get_next_turn()
-        with sp.if sp.rolled_val is None:
+        sp.if sp.rolled_val is None:
             self.data.rolled_value = Die.throw()
-        with sp.else:
+        sp.else:
             self.data.rolled_value = rolled_val
         self.data.allowed_pawns = self.data.get_allowed_pawns_to_move(
             self.data.curr_player, self.data.rolled_value)
-        with sp.if self.data.allowed_pawns:
-            with sp.if sp.ind is None:
+        sp.if self.data.allowed_pawns:
+            sp.if sp.ind is None:
                 self.data.index = self.data.curr_player.choose_pawn(
                     self.data.allowed_pawns)
-            with sp.else:
+            sp.else:
                 self.data.index = ind
             self.data.picked_pawn = self.data.allowed_pawns[self.index]
             self.data._make_move(self.data.curr_player, self.picked_pawn)
-        with sp.else:
+        sp.else:
             self.data.index = -1
             self.data.picked_pawn = None
 

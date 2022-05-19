@@ -26,6 +26,7 @@ except:
         import pip
         install("pygame")
         print("[GAME] Pygame has been installed")
+
     except:
         print("[EXCEPTION] Pip not installed on system")
         print("[GAME] Trying to install pip")

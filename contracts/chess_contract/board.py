@@ -1,5 +1,5 @@
 from curses import COLOR_BLUE
-from importlib_metadata import entry_points
+#from importlib_metadata import entry_point
 import smartpy as sp
 import time
 import pygame
@@ -21,12 +21,12 @@ class Board(sp.Contract):
             rows = rows,
             cols = cols,
             players = sp.set([player1, player2]),
-            ready = False,
+            ready = sp.bool(False),
             last = None,
-            copy = True,
+            copy = sp.bool(True),
             board = sp.list([[0 for x in range(8)] for _ in range(rows)]),
 
-            turn = "white",
+            turn = sp.String("white"),
             
         )
         self.init_storage(
@@ -85,7 +85,7 @@ class Board(sp.Contract):
 
         @sp.entry_point
         def draw(self, win, colour):
-            sp.if self.data.last and colour == self.data.turn:
+            with sp.if_(self.data.last & colour == self.data.turn):
                 y, x = self.data.last[0]
                 y1, x1 = self.data.last[1]
 
@@ -115,7 +115,7 @@ class Board(sp.Contract):
                             sp.for move in self.data.board[i][j].move_list:
                                 danger_moves.append(move)
 
-            return danger_moves
+            sp.result(danger_moves)
 
         
         @sp.entry_points
@@ -126,26 +126,26 @@ class Board(sp.Contract):
             sp.for i in range(self.data.rows):
                 sp.for j in range(self.data.cols):
                     sp.if self.data.board[i][j] != 0:
-                        sp.if self.data.board[i][j].king and self.data.board[i][j].colour:
+                        sp.if self.data.board[i][j].king & self.data.board[i][j].colour:
                             king_pos = (j, i)
 
-'''
-            sp.if king_pos in danger_moves:
-                return True
 
-            return False
-'''
+            with sp.if_(king_pos in danger_moves):
+                sp.result(sp.bool(True))
+
+            sp.result(sp.bool(False))
+
         @sp.entry_points
         def  select(self, col, row, colour):
-            changed = False
+            changed = sp.bool(False)
             prev = (-1, -1)
             sp.for i in range(self.data.rows):
-                sp.for j in range(slef.data.rows):
+                sp.for j in range(self.data.rows):
                     sp.if self.data.board[i][j] != 0:
                         sp.if self.data.board[i][j].selected:
                             prev = (i, j)
 
-            sp.if self.data.board[row][col] == 0 and prev!=(-1,-1):
+            sp.if self.data.board[row][col] == 0 & prev!=(-1,-1):
             moves = self.data.board[prev[0]][prev[1]].move_list
             sp.if (col, row) in moves:
                 changed = self.data.move(prev, (row, col), color)
@@ -154,7 +154,7 @@ class Board(sp.Contract):
                 sp.if prev == (-1,-1):
                     self.reset_selected()
                     sp.if self.data.board[row][col] != 0:
-                        self.data.board[row][col].selected = True
+                        self.data.board[row][col].selected = sp.bool(True)
                 sp.else:
                     sp.if self.data.board[prev[0]][prev[1]].color != self.data.board[row][col].color:
                         moves = self.board[prev[0]][prev[1]].move_list
@@ -162,38 +162,38 @@ class Board(sp.Contract):
                             changed = self.data.move(prev, (row, col), color)
 
                         sp.if self.data.board[row][col].color == color:
-                            self.data.board[row][col].selected = True
+                            self.data.board[row][col].selected = sp.bool(True)
 
                     sp.else:
                         sp.if self.data.board[row][col].color == color:
                             #castling
                             self.reset_selected()
-                            sp.if self.data.board[prev[0]][prev[1]].moved == False and self.data.board[prev[0]][prev[1]].rook and self.data.board[row][col].king and col != prev[1] and prev!=(-1,-1):
-                                castle = True
+                            sp.if self.data.board[prev[0]][prev[1]].moved == sp.bool(False) & self.data.board[prev[0]][prev[1]].rook & self.data.board[row][col].king & col != prev[1] & prev!=(-1,-1):
+                                castle = sp.bool(True)
                                 sp.if prev[1] < col:
                                     sp.for j in range(prev[1]+1, col):
                                         sp.if self.data.board[row][j] != 0:
-                                            castle = False
+                                            castle = sp.bool(False)
 
                                     sp.if castle:
                                         changed = self.data.move(prev, (row, 3), color)
                                         changed = self.data.move((row,col), (row, 2), color)
                                     sp.if not changed:
-                                        self.data.board[row][col].selected = True
+                                        self.data.board[row][col].selected = sp.bool(True)
 
                                 sp.else:
                                     sp.for j in range(col+1,prev[1]):
                                         if self.data.board[row][j] != 0:
-                                            castle = False
+                                            castle = sp.bool(False)
 
                                     sp.if castle:
                                         changed = self.data.move(prev, (row, 6), color)
                                         changed = self.data.move((row,col), (row, 5), color)
                                     sp.if not changed:
-                                        self.data.board[row][col].selected = True
+                                        self.data.board[row][col].selected = sp.bool(True)
                                 
                             sp.else:
-                                self.data.board[row][col].selected = True
+                                self.data.board[row][col].selected = sp.bool(True)
 
             sp.if changed:
                 sp.if self.data.turn == "w":
@@ -204,52 +204,53 @@ class Board(sp.Contract):
                     self.reset_selected()
 
 
-        @sp.entry_points
+        @sp.entry_point
         def reset_selected(self):
         sp.for i in range(self.data.rows):
             sp.for j in range(self.data.cols):
                 sp.if self.data.board[i][j] != 0:
-                    self.data.board[i][j].selected = False
+                    self.data.board[i][j].selected = sp.bool(False)
 
-        @sp.entry_points
+        @sp.entry_point
         def check_mate(self, color):
             sp.if self.is_checked(color):
                 king = None
                 sp.for i in range(self.data.rows):
                     sp.for j in range(self.data.cols):
                         sp.if self.data.board[i][j] != 0:
-                            sp.if self.data.board[i][j].king and self.data.board[i][j].color == color:
+                            sp.if self.data.board[i][j].king & self.data.board[i][j].color == color:
                 
                                king = self.data.board[i][j]
-                '''
+                
                 sp.if king is not None:
                     valid_moves = king.valid_moves(self.data.board)
                     danger_moves = self.get_danger_moves(color)
                     danger_count = 0
-                    for move in valid_moves:
-                        if move in danger_moves:
+                    sp.for move in valid_moves:
+                        sp.if move in danger_moves:
                             danger_count += 1
-                    return danger_count == len(valid_moves)
-'''
-            #return False
+                    sp.result(danger_count == len(valid_moves))
 
+            sp.result(sp.bool(False))
+
+        @sp.entry_point
         def move(self, start, end, color):
             checkedBefore = self.is_checked(color)
-            changed = True
+            changed = sp.bool(True)
             nBoard = self.data.board[:]
             sp.if nBoard[start[0]][start[1]].pawn:
-                nBoard[start[0]][start[1]].first = False
+                nBoard[start[0]][start[1]].first = sp.bool(False)
 
             nBoard[start[0]][start[1]].change_pos((end[0], end[1]))
             nBoard[end[0]][end[1]] = nBoard[start[0]][start[1]]
             nBoard[start[0]][start[1]] = 0
             self.data.board = nBoard
 
-            sp.if self.is_checked(color) or (checkedBefore and self.is_checked(color)):
-                changed = False
+            sp.if self.is_checked(color) or (checkedBefore & self.is_checked(color)):
+                changed = sp.bool(False)
                 nBoard = self.board[:]
                 sp.if nBoard[end[0]][end[1]].pawn:
-                    nBoard[end[0]][end[1]].first = True
+                    nBoard[end[0]][end[1]].first = sp.bool(True)
 
                 nBoard[end[0]][end[1]].change_pos((start[0], start[1]))
                 nBoard[start[0]][start[1]] = nBoard[end[0]][end[1]]
@@ -267,4 +268,4 @@ class Board(sp.Contract):
                     self.data.storedTime2 += (time.time() - self.data.startTime)
                 self.data.startTime = time.time()
 
-            return changed
+            sp.result(changed)

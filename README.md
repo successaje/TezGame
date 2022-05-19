@@ -36,7 +36,9 @@ A feature called "winner declaration mode" will be included, such that the playe
  
  # Tournaments and Championships
  Championship games will be held to determine the best of the best in the game of chess and reward with a rare lengendary NFT as reward.
- 
+
+# FUN FACT
+The NFT collections gives an affirmation to players skills in the game.
  
  ..................................coming soon
  
